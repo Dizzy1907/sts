@@ -1,7 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { User } from '../models';
+import { User, ActionHistory, ForwardingRequest, StoragePosition } from '../models';
 import { authenticateToken, requireRole } from '../middleware/auth';
 
 const router = express.Router();
@@ -52,7 +52,7 @@ router.get('/users', authenticateToken, async (req, res) => {
   }
 });
 
-router.post('/users', authenticateToken, requireRole(['admin']), async (req, res) => {
+router.post('/users', authenticateToken, requireRole(['head_admin', 'admin']), async (req, res) => {
   try {
     const { username, role } = req.body;
     const user = await User.create({
@@ -61,13 +61,26 @@ router.post('/users', authenticateToken, requireRole(['admin']), async (req, res
       role,
       password_hash: null
     });
+    
+    // Log user creation to history
+    await ActionHistory.create({
+      id: `${Date.now()}-user-created`,
+      item_id: user.id,
+      item_name: username,
+      action: 'user_created',
+      to_location: 'System',
+      performed_by: (req as any).user.id,
+      performed_by_username: (req as any).user.username,
+      performed_by_role: (req as any).user.role
+    });
+    
     res.json({ id: user.id, username: user.username, role: user.role });
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-router.put('/users/:id', authenticateToken, requireRole(['admin']), async (req, res) => {
+router.put('/users/:id', authenticateToken, requireRole(['head_admin', 'admin']), async (req, res) => {
   try {
     const { username, role } = req.body;
     await User.update({ username, role }, { where: { id: req.params.id } });
@@ -78,12 +91,39 @@ router.put('/users/:id', authenticateToken, requireRole(['admin']), async (req, 
   }
 });
 
-router.delete('/users/:id', authenticateToken, requireRole(['admin']), async (req, res) => {
+router.delete('/users/:id', authenticateToken, requireRole(['head_admin', 'admin']), async (req, res) => {
   try {
+    const user = await User.findByPk(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    if (user.role === 'head_admin') {
+      return res.status(403).json({ error: 'Head administrators cannot be deleted' });
+    }
+    
+    // Log user deletion to history before deletion
+    await ActionHistory.create({
+      id: `${Date.now()}-user-deleted`,
+      item_id: user.id,
+      item_name: user.username,
+      action: 'user_deleted',
+      from_location: 'System',
+      performed_by: (req as any).user.id,
+      performed_by_username: (req as any).user.username,
+      performed_by_role: (req as any).user.role
+    });
+    
+    // Handle foreign key constraints - set performed_by to null but keep username/role
+    await ActionHistory.update({ performed_by: null }, { where: { performed_by: req.params.id } });
+    await ForwardingRequest.update({ requested_by: null }, { where: { requested_by: req.params.id } });
+    await ForwardingRequest.update({ processed_by: null }, { where: { processed_by: req.params.id } });
+    await StoragePosition.destroy({ where: { stored_by: req.params.id } });
+    
     await User.destroy({ where: { id: req.params.id } });
     res.json({ message: 'User deleted' });
-  } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+  } catch (error: any) {
+    console.error('User deletion error:', error);
+    res.status(500).json({ error: error.message || 'Server error' });
   }
 });
 

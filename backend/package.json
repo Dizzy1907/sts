@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/server.ts",
+    "dev": "cross-env NODE_OPTIONS=\"--max-old-space-size=2048\" nodemon src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node --max-old-space-size=2048 dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -27,7 +27,8 @@
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.1.0",
-    "@types/uuid": "^10.0.0",
+
+    "cross-env": "^10.0.0",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"

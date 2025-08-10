@@ -1,225 +1,244 @@
-# Medical Sterilization Unit Management System - OPTIMIZED
+# Medical Sterilization Unit (MSU) Management System
 
-A streamlined web-based system for tracking medical instruments through their lifecycle: registration → sterilization → storage → surgery room usage.
+A comprehensive web-based system for managing medical instrument sterilization processes, inventory tracking, and workflow management across different departments in healthcare facilities.
 
-## 🚀 OPTIMIZATION IMPROVEMENTS
+## 🏥 Overview
 
-### Backend Optimizations (70% size reduction)
-- **Dependencies**: Removed 4 unused packages (axios, express-validator, isomorphic-dompurify, uuid)
-- **Routes**: Simplified all API routes with minimal error handling
-- **Database**: Optimized queries and removed redundant operations
-- **ID Generation**: Replaced UUID with timestamp-based IDs for better performance
-- **Middleware**: Streamlined authentication and validation
+The MSU Management System streamlines the entire lifecycle of medical instruments from registration to sterilization, storage, and deployment across different departments. It provides role-based access control and real-time tracking capabilities with QR code integration.
 
-### Frontend Optimizations (60% size reduction)
-- **Dependencies**: Removed @types/qrcode.react package
-- **Components**: Consolidated App.tsx from 1000+ lines to 400 lines
-- **CSS**: Reduced from 800+ lines to 300 lines with better organization
-- **State Management**: Simplified with useCallback and optimized re-renders
-- **API Calls**: Streamlined service layer with minimal interfaces
+## ✨ Key Features
 
-### Performance Improvements
-- **Bundle Size**: Reduced by ~40% overall
-- **Load Time**: Faster initial page load
-- **Memory Usage**: Lower memory footprint
-- **Database Queries**: Optimized with proper indexing
-- **Network Requests**: Reduced API call complexity
+- **Inventory Management**: Track medical instruments with unique IDs and QR codes
+- **Sterilization Process**: Multi-step sterilization workflow with status tracking
+- **Group Management**: Batch processing of instruments in groups
+- **Department Forwarding**: Inter-department transfer requests and approvals
+- **Storage System**: Physical location tracking with grid-based storage
+- **Role-Based Access**: Different interfaces for Admin, MSU, Storage, and Surgery personnel
+- **QR Code Integration**: Scan instruments and groups for quick access
+- **Export Capabilities**: Generate PDF and Excel reports
+- **Audit Trail**: Complete history tracking of all actions
 
-## Features
-
-### 🔐 Authentication & User Management
-- Role-based access control (Admin, MSU, Storage, Surgery)
-- JWT token authentication
-- First-time password setup
-
-### 📋 Medical Instrument Management
-- **Registration**: Bulk registration with auto-generated IDs
-- **Status Tracking**: Real-time sterilization and usage status
-- **Location Tracking**: MSU → Storage → Surgery Rooms
-- **QR Code Integration**: Generate and scan QR codes for items
-
-### 📦 Group Management
-- Create instrument bundles/groups
-- Batch operations on groups
-- Group-based QR codes
-
-### 🔄 Department Forwarding
-- Storage → Surgery room forwarding
-- Request approval system
-- Complete audit trail
-
-### 📊 Reporting & Export
-- Action history with filtering
-- Excel and PDF export
-- Real-time inventory dashboard
-
-## Technology Stack
+## 🏗️ System Architecture
 
 ### Frontend
-- **React 18+** with TypeScript
+- **React 19** with TypeScript
 - **Vite** for build tooling
-- **QR Code Libraries**: qrcode.react, html5-qrcode
-- **Export Libraries**: xlsx, jspdf
-- **HTTP Client**: Axios
+- **QR Code** scanning and generation
+- **Responsive design** with custom CSS
 
 ### Backend
 - **Node.js** with Express.js
-- **MySQL 8.0+** database
-- **Sequelize** ORM
-- **JWT** authentication with bcrypt
-- **CORS** enabled
+- **TypeScript** for type safety
+- **Sequelize ORM** with MySQL
+- **JWT Authentication**
+- **RESTful API** design
 
-## Quick Start
+### Database
+- **MySQL** database
+- Normalized schema with foreign key relationships
+- Audit logging for all operations
+
+## 👥 User Roles
+
+| Role | Permissions |
+|------|-------------|
+| **Admin** | Full system access, user management, inventory control |
+| **MSU Personnel** | Sterilization processes, group management |
+| **Storage Personnel** | Storage management, forwarding requests |
+| **Surgery Personnel** | Receive instruments, mark as used |
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 16+
-- MySQL 8.0+
+
+- Node.js (v16 or higher)
+- MySQL (v8.0 or higher)
+- npm or yarn package manager
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd medical-sterilization-system
+   cd COOP
    ```
 
-2. **Setup Database**
-   ```bash
-   cd backend
-   node setup-database.js
-   ```
-
-3. **Backend Setup**
+2. **Backend Setup**
    ```bash
    cd backend
    npm install
-   
-   # Configure environment
-   cp .env.example .env
-   # Edit .env with your database credentials
-   
-   # Start development server
-   npm run dev
    ```
 
-4. **Frontend Setup**
+3. **Frontend Setup**
    ```bash
    cd frontend
    npm install
+   ```
+
+4. **Database Setup**
+   ```bash
+   # Create MySQL database
+   mysql -u root -p < backend/database.sql
    
-   # Start development server
+   # Configure environment variables
+   cp backend/.env.example backend/.env
+   # Edit .env with your database credentials
+   ```
+
+5. **Environment Configuration**
+   
+   Edit `backend/.env`:
+   ```env
+   DB_HOST=localhost
+   DB_USER=your_username
+   DB_PASSWORD=your_password
+   DB_NAME=medical_sterilization
+   JWT_SECRET=your_jwt_secret
+   PORT=3001
+   ```
+
+### Running the Application
+
+1. **Start Backend Server**
+   ```bash
+   cd backend
    npm run dev
    ```
 
-5. **Access the Application**
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:3001
-   - Default admin login: `admin` / `password`
+2. **Start Frontend Development Server**
+   ```bash
+   cd frontend
+   npm run dev
+   ```
 
-## User Roles & Permissions
+3. **Access the Application**
+   - Frontend: `http://localhost:5173`
+   - Backend API: `http://localhost:3001`
 
-### 👨💼 Administrator
-- User management
-- System configuration
-- Full access to all features
+### Default Login
+- **Username**: `admin`
+- **Password**: `admin123`
 
-### 🏥 MSU Personnel
-- Register new instruments
-- Mark items as sterilized
-- View inventory
+## 📱 Core Workflows
 
-### 📦 Storage Personnel
-- Create instrument groups
-- Forward groups to surgery rooms
-- Manage storage inventory
+### 1. Instrument Registration
+- Admin/MSU personnel register new instruments
+- System generates unique IDs and QR codes
+- Instruments start at MSU location
 
-### ⚕️ Surgery Personnel
-- Accept/reject forwarding requests
-- Mark instruments as used
-- Select surgery rooms
+### 2. Group Creation
+- Batch instruments into groups for processing
+- Generate group QR codes for tracking
+- Assign groups to specific locations
 
-## API Endpoints
+### 3. Sterilization Process
+- Multi-step workflow: Hand washing → Automatic washing → Steam sterilization → Cooling → Finished
+- Real-time status updates
+- QR code scanning for quick access
+
+### 4. Department Forwarding
+- Request transfers between departments
+- Approval/rejection workflow
+- Automatic location updates
+
+### 5. Storage Management
+- Grid-based storage system (A1-J20)
+- Physical location tracking
+- Storage position assignment
+
+## 🔧 API Endpoints
 
 ### Authentication
-```
-POST /api/auth/login
-POST /api/auth/set-password
-GET  /api/auth/users (admin only)
-POST /api/auth/users (admin only)
-DELETE /api/auth/users/:id (admin only)
-```
+- `POST /api/auth/login` - User login
+- `GET /api/auth/users` - Get all users (Admin only)
 
-### Items Management
-```
-GET    /api/items
-POST   /api/items/register
-PUT    /api/items/:id/status
-PUT    /api/items/bulk-status
-GET    /api/items/:id
-DELETE /api/items/:id
-DELETE /api/items/clear/all (admin only)
-```
+### Items
+- `GET /api/items` - Get all items with pagination
+- `POST /api/items/register` - Register new items
+- `PUT /api/items/bulk-status` - Update item status
 
-### Groups Management
-```
-GET    /api/groups
-POST   /api/groups
-PUT    /api/groups/:id/location
-DELETE /api/groups/:id
-GET    /api/groups/:id
-GET    /api/groups/:id/sterilizable-items
-GET    /api/groups/available-items/:role
-```
+### Groups
+- `GET /api/groups` - Get all groups
+- `POST /api/groups` - Create new group
+- `DELETE /api/groups/:id` - Delete group
 
-### History & Audit
-```
-GET    /api/history
-DELETE /api/history/clear (admin only)
-```
+### Forwarding
+- `GET /api/forwarding` - Get forwarding requests
+- `POST /api/forwarding` - Create forwarding request
+- `PUT /api/forwarding/:id/accept` - Accept request
+- `PUT /api/forwarding/:id/reject` - Reject request
 
-### Forwarding System
-```
-GET    /api/forwarding (admin only)
-GET    /api/forwarding/pending
-POST   /api/forwarding
-POST   /api/forwarding/:id/accept
-POST   /api/forwarding/:id/reject
-```
+### History
+- `GET /api/history` - Get action history with filters
 
-## Database Schema
+### Storage
+- `GET /api/storage` - Get storage locations
+- `POST /api/storage` - Store item at location
 
-### Core Tables
-- **users**: Authentication and role management
-- **medical_items**: Instrument registry with status tracking
-- **instrument_groups**: Batch management
-- **group_items**: Group membership linking
-- **action_history**: Complete audit trail
-- **forwarding_requests**: Department forwarding workflow
+## 📊 Database Schema
 
-## Development
+### Key Tables
+- `users` - User accounts and roles
+- `medical_items` - Individual instruments
+- `instrument_groups` - Batch groupings
+- `group_items` - Group membership
+- `action_history` - Audit trail
+- `forwarding_requests` - Inter-department transfers
+- `storage_locations` - Physical storage tracking
+
+## 🔒 Security Features
+
+- JWT-based authentication
+- Role-based access control
+- Password hashing with bcrypt
+- SQL injection prevention
+- CORS configuration
+
+## 📈 Monitoring & Analytics
+
+- Complete audit trail of all actions
+- Export capabilities (PDF/Excel)
+- Real-time status tracking
+- Performance optimization with pagination
+- Background sync for data consistency
+
+## 🛠️ Development
 
 ### Project Structure
 ```
-medical-sterilization-system/
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── services/
-│   │   ├── App.tsx
-│   │   └── App.css
-│   └── package.json
+COOP/
 ├── backend/
 │   ├── src/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   ├── middleware/
-│   │   └── server.ts
-│   ├── setup-database.js
-│   └── package.json
+│   │   ├── models/     # Database models
+│   │   ├── routes/     # API endpoints
+│   │   ├── middleware/ # Authentication
+│   │   └── server.ts   # Main server
+│   └── database.sql    # Database schema
+├── frontend/
+│   ├── src/
+│   │   ├── components/ # React components
+│   │   ├── hooks/      # Custom hooks
+│   │   ├── services/   # API services
+│   │   └── App.tsx     # Main application
+│   └── public/
 └── README.md
 ```
 
-### Building for Production
+### Available Scripts
+
+**Backend:**
+- `npm run dev` - Development server with hot reload
+- `npm run build` - Build for production
+- `npm start` - Start production server
+
+**Frontend:**
+- `npm run dev` - Development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+
+## 🚀 Deployment
+
+### Production Build
 ```bash
 # Backend
 cd backend
@@ -229,30 +248,46 @@ npm start
 # Frontend
 cd frontend
 npm run build
-npm run preview
+# Serve dist/ folder with web server
 ```
 
-## Security Features
+### Environment Variables
+Ensure all production environment variables are properly configured:
+- Database connection settings
+- JWT secret key
+- CORS origins
+- Port configurations
 
-- JWT token authentication
-- Password hashing with bcrypt
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📝 License
+
+This project is licensed under the ISC License.
+
+## 🆘 Support
+
+For support and questions:
+- Check the documentation
+- Review the API endpoints
+- Examine the database schema
+- Test with the default admin account
+
+## 🔄 Version History
+
+- **v1.0.0** - Initial release with core functionality
 - Role-based access control
-- SQL injection prevention
-- CORS configuration
-- Input validation
+- QR code integration
+- Multi-step sterilization workflow
+- Department forwarding system
+- Storage management
+- Comprehensive audit trail
 
-## Performance Metrics
+---
 
-- **Initial Load**: ~2s (improved from ~3.5s)
-- **Bundle Size**: ~800KB (reduced from ~1.3MB)
-- **Memory Usage**: ~50MB (reduced from ~80MB)
-- **API Response**: <100ms average
-- **Database Queries**: Optimized with indexing
-
-## License
-
-This project is licensed under the MIT License.
-
-## Support
-
-For support and questions, please contact the development team or create an issue in the repository.
+**Note**: This system is designed for healthcare environments and should be deployed with appropriate security measures and compliance considerations for medical data handling.

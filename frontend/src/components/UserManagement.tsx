@@ -6,12 +6,13 @@ const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newUsername, setNewUsername] = useState('');
-  const [newRole, setNewRole] = useState<'admin' | 'msu' | 'storage' | 'surgery'>('msu');
+  const [newRole, setNewRole] = useState<'head_admin' | 'admin' | 'msu' | 'storage' | 'surgery'>('msu');
   const [loading, setLoading] = useState(true);
   const [editingUser, setEditingUser] = useState<string | null>(null);
   const [editUsername, setEditUsername] = useState('');
-  const [editRole, setEditRole] = useState<'admin' | 'msu' | 'storage' | 'surgery'>('msu');
+  const [editRole, setEditRole] = useState<'head_admin' | 'admin' | 'msu' | 'storage' | 'surgery'>('msu');
   const [newPassword, setNewPassword] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     loadUsers();
@@ -89,12 +90,17 @@ const UserManagement: React.FC = () => {
 
   const getRoleColor = (role: string) => {
     switch (role) {
+      case 'head_admin': return '#8b5cf6';
       case 'admin': return '#e74c3c';
       case 'msu': return '#3498db';
       case 'storage': return '#f39c12';
       case 'surgery': return '#27ae60';
       default: return '#95a5a6';
     }
+  };
+
+  const getRoleDisplay = (role: string) => {
+    return role === 'head_admin' ? 'HEAD ADMIN' : role.toUpperCase();
   };
 
   if (loading) {
@@ -107,7 +113,7 @@ const UserManagement: React.FC = () => {
         <h2>User Management</h2>
         <button 
           onClick={() => setShowCreateForm(true)}
-          className="create-user-btn"
+          className="btn-green create-user-btn"
         >
           + Create User
         </button>
@@ -135,6 +141,7 @@ const UserManagement: React.FC = () => {
                 <option value="storage">Storage Personnel</option>
                 <option value="surgery">Surgery Personnel</option>
                 <option value="admin">Administrator</option>
+                <option value="head_admin">Head Administrator</option>
               </select>
             </div>
             <div className="form-actions">
@@ -151,8 +158,20 @@ const UserManagement: React.FC = () => {
         </div>
       )}
 
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Search users by name..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
+      </div>
+
       <div className="users-list">
-        {users.map(user => (
+        {users.filter(user => 
+          user.username.toLowerCase().includes(searchTerm.toLowerCase())
+        ).map(user => (
           <div key={user.id} className="user-card">
             {editingUser === user.id ? (
               <div className="edit-user-form">
@@ -170,6 +189,7 @@ const UserManagement: React.FC = () => {
                   <option value="storage">Storage Personnel</option>
                   <option value="surgery">Surgery Personnel</option>
                   <option value="admin">Administrator</option>
+                  <option value="head_admin">Head Administrator</option>
                 </select>
                 <input
                   type="text"
@@ -190,7 +210,7 @@ const UserManagement: React.FC = () => {
                     className="role"
                     style={{ color: getRoleColor(user.role) }}
                   >
-                    {user.role.toUpperCase()}
+                    {getRoleDisplay(user.role)}
                   </div>
 
                 </div>
@@ -209,7 +229,7 @@ const UserManagement: React.FC = () => {
                   <button
                     onClick={() => handleDeleteUser(user.id)}
                     className="btn-red"
-                    disabled={user.role === 'admin'}
+                    disabled={user.role === 'admin' || user.role === 'head_admin'}
                   >
                     Delete
                   </button>
