@@ -59,8 +59,8 @@ The MSU Management System streamlines the entire lifecycle of medical instrument
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd COOP
+   git clone https://github.com/Dizzy1907/sts.git
+   cd sts
    ```
 
 2. **Backend Setup**
